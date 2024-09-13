@@ -10,6 +10,10 @@ contract EventManager {
 
     constructor() {}
 
+    struct AttendantLog {
+        address attendee;
+        uint256 checkInTime;
+    }
 
     struct Event {
         uint256 id;
@@ -25,15 +29,15 @@ contract EventManager {
         bool isCancelled;
         address NFTTokenAddress;
         address[] attendees;
+        AttendantLog[] attendantLog;
     }
 
     mapping(uint256 => Event) events;
     mapping(address => mapping(uint256 => bool)) registeredUsers;
+    
 
     // For Manager
-    function isEventOwner(uint256 _id) external view returns (bool) {
-        return events[_id].created_by != msg.sender;
-    }
+
 
     function createEvent(
         address _NFTTokenAddress,
@@ -82,14 +86,17 @@ contract EventManager {
         return ev;
     }
 
-    function getEventAttendee(uint eventId) external view returns (address [] memory) {
+    function totalRegisteredEventMembers(uint eventId) external view returns (address [] memory) {
+        if (!isEventOwner(eventId)) {
+            revert Error.NotTheEventManager();
+        }
+
         if (events[eventId].id < 1) {
             revert Error.NotAValidEventId();
         }
         return events[eventId].attendees;
     }
 
-    //For Users
     function registerForEvent(uint256 eventId) external {
         if (events[eventId].id < 1) {
             revert Error.NotAValidEventId();
@@ -114,6 +121,25 @@ contract EventManager {
         events[eventId].attendees.push(msg.sender);
     }
 
+    function checkInForEvent(uint eventId, address _member) external returns(AttendantLog memory) {
+        
+        if (!isEventOwner(eventId)) {
+            revert Error.NotTheEventManager();
+        }
+        if (events[eventId].id < 1) {
+            revert Error.NotAValidEventId();
+        }
+        if (!registeredUsers[_member][eventId]) {
+            revert Error.NotRegisteredForEvent();
+        }
+        AttendantLog memory newLog = AttendantLog({
+            attendee: _member,
+            checkInTime: block.timestamp
+        });
+        events[eventId].attendantLog.push(newLog);
+        return newLog;
+    }
+
     function _isEmptyString(string memory str) internal pure returns (bool) {
         return bytes(str).length == 0;
     }
@@ -121,4 +147,9 @@ contract EventManager {
     function checkForNft(address _NFTContractAddress, address user) public view returns (uint) {
         return IERC721(_NFTContractAddress).balanceOf(user);
     }
+
+    function isEventOwner(uint256 _id) internal view returns (bool) {
+        return events[_id].created_by == msg.sender;
+    }
+
 }

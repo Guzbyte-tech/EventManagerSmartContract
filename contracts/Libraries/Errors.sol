@@ -23,4 +23,5 @@ library Error {
     error EventIsClosed();
     error EventIsCancelled();
     error NotRegisteredForEvent();
+    error NotTheEventManager();
 }
