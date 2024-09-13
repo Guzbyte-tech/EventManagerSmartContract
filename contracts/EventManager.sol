@@ -10,6 +10,7 @@ contract EventManager {
 
     constructor() {}
 
+
     struct Event {
         uint256 id;
         string name;
@@ -79,6 +80,13 @@ contract EventManager {
         ev.NFTTokenAddress = _NFTTokenAddress;
         ev.maxNumberOfRegisteration = _maxNumberOfRegistration;
         return ev;
+    }
+
+    function getEventAttendee(uint eventId) external view returns (address [] memory) {
+        if (events[eventId].id < 1) {
+            revert Error.NotAValidEventId();
+        }
+        return events[eventId].attendees;
     }
 
     //For Users

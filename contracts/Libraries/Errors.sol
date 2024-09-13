@@ -22,4 +22,5 @@ library Error {
     error YouDontHaveOurNFT();
     error EventIsClosed();
     error EventIsCancelled();
+    error NotRegisteredForEvent();
 }
