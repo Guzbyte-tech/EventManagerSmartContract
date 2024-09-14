@@ -19,9 +19,11 @@ library Error {
     error InValidNFTAddress();
     error NotAValidEventId();
     error AlreadyRegistered();
-    error YouDontHaveOurNFT();
+    error YouDontHaveEventNFT();
     error EventIsClosed();
     error EventIsCancelled();
     error NotRegisteredForEvent();
     error NotTheEventManager();
+    error EventRegistrationClosed();
+    error NFTAlreadyUsed();
 }

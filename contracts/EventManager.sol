@@ -34,10 +34,8 @@ contract EventManager {
 
     mapping(uint256 => Event) events;
     mapping(address => mapping(uint256 => bool)) registeredUsers;
-    
 
     // For Manager
-
 
     function createEvent(
         address _NFTTokenAddress,
@@ -86,7 +84,9 @@ contract EventManager {
         return ev;
     }
 
-    function totalRegisteredEventMembers(uint eventId) external view returns (address [] memory) {
+    function totalRegisteredEventMembers(
+        uint eventId
+    ) external view returns (address[] memory) {
         if (!isEventOwner(eventId)) {
             revert Error.NotTheEventManager();
         }
@@ -116,13 +116,15 @@ contract EventManager {
 
         address NFTAddr = events[eventId].NFTTokenAddress;
         if (checkForNft(NFTAddr, msg.sender) < 1) {
-            revert Error.YouDontHaveOurNFT();
+            revert Error.YouDontHaveEventNFT();
         }
         events[eventId].attendees.push(msg.sender);
     }
 
-    function checkInForEvent(uint eventId, address _member) external returns(AttendantLog memory) {
-        
+    function checkInForEvent(
+        uint eventId,
+        address _member
+    ) external returns (AttendantLog memory) {
         if (!isEventOwner(eventId)) {
             revert Error.NotTheEventManager();
         }
@@ -144,12 +146,14 @@ contract EventManager {
         return bytes(str).length == 0;
     }
 
-    function checkForNft(address _NFTContractAddress, address user) public view returns (uint) {
+    function checkForNft(
+        address _NFTContractAddress,
+        address user
+    ) public view returns (uint) {
         return IERC721(_NFTContractAddress).balanceOf(user);
     }
 
     function isEventOwner(uint256 _id) internal view returns (bool) {
         return events[_id].created_by == msg.sender;
     }
-
 }
