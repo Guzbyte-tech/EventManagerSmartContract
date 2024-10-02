@@ -10,7 +10,6 @@ library EventAction {
         address attendee;
         uint256 checkInTime;
     }
-
     struct Event {
         uint256 id;
         string name;
